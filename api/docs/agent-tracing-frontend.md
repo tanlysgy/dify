@@ -885,6 +885,8 @@ dev `41eb10a66d` 已通过标准 Build/Deploy；7 服务与镜像 revision、5 �
 
 新引入的 **Workflow Tool 容器内部 Agent 暂不采集内部 Agent spans**：该子执行使用 source app 上下文，保留父 run ID，但子节点不在根 graph 中。本轮在 `workflow_tool_invocation_id` 非 None 时于 tracing 服务构造前跳过，避免按子应用当前策略预留父运行的记录或产生缺少父节点的树；不改变常规根 Workflow、inline/reference 和 detached preview 的既有范围。外层工具/legacy 记录不能作为内部 Agent 全树已采集的证明，相关 usage 也不据此宣称覆盖隐藏内部模型调用。完整根归属、开始时冻结、父子树、统计及真实平台验收由 [DIFY-3008](https://linear.app/dify/issue/DIFY-3008) 跟踪；这是新上游功能的明确边界，不宣称已发生真实供应商串数据。
 
+随后合入 main `7d039cb619`，保留新增的 Workflow Tool 对外导出过滤。`a1d41de2e8` 首轮 CI 在合成的主分支合并树上出现 29 个 API 单测失败：LogStore 读取已改为 `execute_sql`，两个旧 fixture 只隔离 `get_logs`；新增 MLflow 边界测试也只隔离全局 tracer，遗漏了私有客户端请求。修复仅调整三个测试的传输边界，保留租户/所有者/无 SQL 事务跨 I/O 及内部数据排除断言，并用底层 HTTP/socket tripwire 禁止真实网络；不是修改生产逻辑、timeout、skip 或覆盖率门槛来通过。旧 head 的覆盖率报告缺失失败的两个 API unit 上传，不能沿用其不完整比例或更早的全绿作为新 head 结论。该轮 Docker 基础镜像 token 超时与上述单测问题分开记录，失败/连带取消任务仅重跑一次后通过。最终 CI 以 PR 当前提交及其实际合并树的检查为准。
+
 ## 13. 定稿检查与代码定位
 
 发布前重新核对以下源文件；运行服务、schema 和本文如有差异，应先修正契约再更新文档：
