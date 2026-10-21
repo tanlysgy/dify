@@ -27,6 +27,8 @@ import {
   zPluginError,
   zRoleAlreadyAssignedError,
   zTooManyFilesError,
+  zTriggerOauthClientChangedError,
+  zTriggerOauthClientConfigInvalidError,
   zUnsupportedFileTypeError,
   zWorkflowToolHumanInputNotSupportedError,
 } from './zod.gen.ts'
@@ -4953,7 +4955,7 @@ export const info3 = {
 }
 
 /**
- * Remove custom OAuth client configuration
+ * Remove the workspace's custom OAuth client configuration
  */
 export const delete22 = oc
   .route({
@@ -4961,14 +4963,14 @@ export const delete22 = oc
     method: 'DELETE',
     operationId: 'deleteWorkspacesCurrentTriggerProviderByProviderOauthClient',
     path: '/workspaces/current/trigger-provider/{provider}/oauth/client',
-    summary: 'Remove custom OAuth client configuration',
+    summary: "Remove the workspace's custom OAuth client configuration",
     tags: ['console'],
   })
   .input(z.object({ params: zDeleteWorkspacesCurrentTriggerProviderByProviderOauthClientPath }))
   .output(zDeleteWorkspacesCurrentTriggerProviderByProviderOauthClientResponse)
 
 /**
- * Get OAuth client configuration for a provider
+ * Get the masked OAuth client configuration for a provider
  */
 export const get114 = oc
   .route({
@@ -4976,14 +4978,20 @@ export const get114 = oc
     method: 'GET',
     operationId: 'getWorkspacesCurrentTriggerProviderByProviderOauthClient',
     path: '/workspaces/current/trigger-provider/{provider}/oauth/client',
-    summary: 'Get OAuth client configuration for a provider',
+    summary: 'Get the masked OAuth client configuration for a provider',
     tags: ['console'],
   })
   .input(z.object({ params: zGetWorkspacesCurrentTriggerProviderByProviderOauthClientPath }))
   .output(zGetWorkspacesCurrentTriggerProviderByProviderOauthClientResponse)
+  .errors({
+    trigger_oauth_client_config_invalid: {
+      status: 500,
+      data: zTriggerOauthClientConfigInvalidError,
+    },
+  })
 
 /**
- * Configure custom OAuth client for a provider
+ * Configure the workspace's custom OAuth client for a provider
  */
 export const post72 = oc
   .route({
@@ -4991,7 +4999,7 @@ export const post72 = oc
     method: 'POST',
     operationId: 'postWorkspacesCurrentTriggerProviderByProviderOauthClient',
     path: '/workspaces/current/trigger-provider/{provider}/oauth/client',
-    summary: 'Configure custom OAuth client for a provider',
+    summary: "Configure the workspace's custom OAuth client for a provider",
     tags: ['console'],
   })
   .input(
@@ -5001,6 +5009,13 @@ export const post72 = oc
     }),
   )
   .output(zPostWorkspacesCurrentTriggerProviderByProviderOauthClientResponse)
+  .errors({
+    trigger_oauth_client_changed: { status: 409, data: zTriggerOauthClientChangedError },
+    trigger_oauth_client_config_invalid: {
+      status: 500,
+      data: zTriggerOauthClientConfigInvalidError,
+    },
+  })
 
 export const client = {
   delete: delete22,
